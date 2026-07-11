@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Acute Medicine SCE — O.Dakka</title>
+<style>
+:root {
+  --bg: #09111f;
+  --surface: #0e1c2f;
+  --card: #122038;
+  --border: #1d3352;
+  --accent: #00c2ff;
+  --accent2: #0077b6;
+  --green: #22c55e;
+  --red: #ef4444;
+  --yellow: #f59e0b;
+  --purple: #818cf8;
+  --text: #e2eaf4;
+  --muted: #5e7a9a;
+  --dim: #8fa8c8;
+  --r: 12px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
+
+/* ── HEADER ── */
+.hdr {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 20px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.hdr-logo { display: flex; align-items: center; gap: 10px; }
+.hdr-logo svg { width: 28px; height: 28px; }
+.hdr-title { font-size: .9rem; font-weight: 800; letter-spacing: .02em; color: var(--text); }
+.hdr-title span { color: var(--accent); }
+.hdr-right { display: flex; gap: 6px; align-items: center; }
+.pill { background: var(--card); border: 1px solid var(--border); border-radius: 99px; padding: 4px 12px; font-size: .72rem; color: var(--dim); }
+.pill b { color: var(--accent); }
+
+/* ── SCREENS ── */
+.scr { display: none; }
+.scr.on { display: block; }
+
+/* ── HOME ── */
+.home { max-width: 640px; margin: 0 auto; padding: 28px 16px 40px; }
+.home-hero {
+  background: linear-gradient(135deg, #0e1c2f 0%, #0a1628 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 24px 20px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.home-hero::before {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 160px; height: 160px;
+  background: radial-gradient(circle, rgba(0,194,255,.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-label { font-size: .65rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 8px; }
+.hero-title { font-size: 1.5rem; font-weight: 800; line-height: 1.2; margin-bottom: 4px; }
+.hero-sub { font-size: .8rem; color: var(--muted); margin-bottom: 18px; }
+.stat-row { display: flex; gap: 8px; }
+.stat { flex: 1; background: rgba(0,194,255,.06); border: 1px solid rgba(0,194,255,.15); border-radius: 8px; padding: 10px 8px; text-align: center; }
+.stat-n { font-size: 1.4rem; font-weight: 800; color: var(--accent); line-height: 1; }
+.stat-l { font-size: .62rem; color: var(--muted); margin-top: 3px; text-transform: uppercase; letter-spacing: .05em; }
+
+.sec-head { font-size: .68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin: 18px 0 8px; }
+.cat-scroll { display: flex; flex-direction: column; gap: 5px; max-height: 380px; overflow-y: auto; padding-right: 2px; margin-bottom: 16px; }
+.cat-scroll::-webkit-scrollbar { width: 3px; }
+.cat-scroll::-webkit-scrollbar-track { background: transparent; }
+.cat-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+
+.cat-row {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+  padding: 10px 14px; cursor: pointer; transition: border-color .15s, background .15s;
+}
+.cat-row:hover { border-color: var(--accent); }
+.cat-row.sel { border-color: var(--accent); background: rgba(0,194,255,.05); }
+.cat-name { font-size: .84rem; font-weight: 600; }
+.cat-sub { font-size: .66rem; color: var(--muted); margin-top: 1px; }
+.cat-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.cat-n { font-size: .75rem; font-weight: 700; color: var(--accent); }
+.mini-bar { width: 60px; height: 3px; background: var(--border); border-radius: 99px; overflow: hidden; }
+.mini-fill { height: 100%; background: var(--green); border-radius: 99px; }
+
+.go-btn {
+  width: 100%; padding: 13px; background: var(--accent); color: #09111f;
+  font-weight: 800; font-size: .95rem; border: none; border-radius: var(--r);
+  cursor: pointer; letter-spacing: .02em; transition: opacity .15s;
+}
+.go-btn:hover { opacity: .88; }
+
+/* ── QUIZ ── */
+.quiz { max-width: 680px; margin: 0 auto; padding: 14px 14px 40px; }
+.q-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 10px;
+}
+.q-counter { font-size: .78rem; color: var(--muted); }
+.q-counter b { color: var(--text); }
+.end-btn {
+  background: none; border: 1px solid var(--border); color: var(--muted);
+  padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: .72rem;
+}
+.end-btn:hover { border-color: var(--red); color: var(--red); }
+
+.prog-track { height: 2px; background: var(--border); border-radius: 99px; margin-bottom: 12px; overflow: hidden; }
+.prog-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--purple)); border-radius: 99px; transition: width .35s; }
+
+/* QUESTION CARD — ELSO style */
+.q-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.q-card-head {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 14px;
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+.tag { font-size: .65rem; font-weight: 700; padding: 3px 8px; border-radius: 99px; }
+.tag-id { background: rgba(0,194,255,.12); color: var(--accent); }
+.tag-cat { background: rgba(129,140,248,.12); color: var(--purple); }
+.tag-mcq { background: rgba(34,197,94,.12); color: var(--green); }
+.q-body { padding: 14px 16px; }
+.stem { font-size: .88rem; line-height: 1.74; color: var(--text); }
+.stem p { margin-bottom: 8px; }
+.stem p:last-child { margin-bottom: 0; }
+.stem table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: .8rem; }
+.stem th { background: rgba(0,194,255,.08); padding: 5px 8px; border: 1px solid var(--border); color: var(--accent); text-align: left; font-weight: 600; }
+.stem td { padding: 5px 8px; border: 1px solid var(--border); }
+
+/* OPTIONS */
+.opts { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+.opt {
+  display: flex; align-items: flex-start; gap: 10px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  padding: 10px 13px; cursor: pointer; font-size: .85rem; color: var(--text);
+  text-align: left; width: 100%; transition: all .15s;
+}
+.opt:hover:not(:disabled) { border-color: var(--accent); background: rgba(0,194,255,.04); }
+.opt:disabled { cursor: default; }
+.opt.correct { border-color: var(--green) !important; background: rgba(34,197,94,.1) !important; color: var(--green) !important; }
+.opt.wrong { border-color: var(--red) !important; background: rgba(239,68,68,.1) !important; color: var(--red) !important; }
+.opt.reveal-ok { border-color: var(--green); background: rgba(34,197,94,.06); }
+.opt-l {
+  width: 22px; height: 22px; min-width: 22px; border-radius: 50%;
+  background: var(--border); display: flex; align-items: center;
+  justify-content: center; font-size: .68rem; font-weight: 800; margin-top: 1px;
+}
+.opt.correct .opt-l { background: var(--green); color: #09111f; }
+.opt.wrong .opt-l { background: var(--red); color: #fff; }
+.opt.reveal-ok .opt-l { background: var(--green); color: #09111f; }
+
+/* ANSWER REVEAL */
+.ans-reveal {
+  background: rgba(34,197,94,.07);
+  border: 1px solid rgba(34,197,94,.35);
+  border-left: 3px solid var(--green);
+  border-radius: 8px; padding: 12px 14px;
+  margin-bottom: 10px; display: none;
+}
+.ans-reveal.on { display: block; }
+.ans-lbl { font-size: .63rem; color: var(--green); font-weight: 800; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 5px; }
+.ans-txt { font-size: .9rem; font-weight: 700; color: var(--green); line-height: 1.5; }
+
+/* SELF ASSESS */
+.self {
+  display: none; gap: 6px; margin-bottom: 10px;
+}
+.self.on { display: flex; }
+.sa {
+  flex: 1; padding: 10px; border-radius: 8px;
+  font-weight: 700; font-size: .8rem; cursor: pointer; border: 1px solid;
+  transition: opacity .15s;
+}
+.sa:hover { opacity: .8; }
+.sa-y { background: rgba(34,197,94,.12); color: var(--green); border-color: rgba(34,197,94,.4); }
+.sa-n { background: rgba(239,68,68,.12); color: var(--red); border-color: rgba(239,68,68,.4); }
+
+/* ACTIONS */
+.acts { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+.act {
+  flex: 1; min-width: 90px; padding: 10px 12px;
+  border: none; border-radius: 8px; font-weight: 700;
+  font-size: .8rem; cursor: pointer; transition: opacity .15s;
+}
+.act:hover { opacity: .85; }
+.act-reveal { background: var(--yellow); color: #09111f; }
+.act-next { background: var(--accent); color: #09111f; }
+.act-expl { background: var(--surface); border: 1px solid var(--border); color: var(--dim); }
+
+/* EXPLANATION — ELSO "Focus" style */
+.focus {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--accent);
+  border-radius: 0 0 var(--r) var(--r);
+  padding: 14px 16px;
+  display: none;
+}
+.focus.on { display: block; }
+.focus-lbl {
+  font-size: .63rem; font-weight: 800; color: var(--accent);
+  text-transform: uppercase; letter-spacing: .1em; margin-bottom: 9px;
+  display: flex; align-items: center; gap: 6px;
+}
+.focus-lbl::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.focus-txt { font-size: .84rem; line-height: 1.72; color: var(--dim); }
+
+/* ── RESULTS ── */
+.results { max-width: 520px; margin: 0 auto; padding: 40px 16px; text-align: center; }
+.res-icon { font-size: 2.8rem; margin-bottom: 12px; }
+.res-pct { font-size: 3.8rem; font-weight: 800; color: var(--accent); line-height: 1; margin-bottom: 6px; }
+.res-sub { font-size: .84rem; color: var(--muted); margin-bottom: 24px; }
+.res-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 24px; }
+.res-box { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 14px 8px; }
+.res-n { font-size: 1.6rem; font-weight: 800; }
+.res-l { font-size: .65rem; color: var(--muted); margin-top: 3px; text-transform: uppercase; letter-spacing: .05em; }
+.res-btns { display: flex; gap: 8px; justify-content: center; }
+.res-btn { padding: 10px 22px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: .84rem; border: none; }
+.res-p { background: var(--accent); color: #09111f; }
+.res-s { background: var(--surface); border: 1px solid var(--border); color: var(--text); }
+
+@media (max-width: 480px) {
+  .stat-row { gap: 5px; }
+  .stat-n { font-size: 1.2rem; }
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-logo">
+    <svg viewBox="0 0 28 28" fill="none">
+      <rect width="28" height="28" rx="7" fill="rgba(0,194,255,0.12)"/>
+      <path d="M7 14h14M14 7v14" stroke="#00c2ff" stroke-width="2.2" stroke-linecap="round"/>
+      <circle cx="14" cy="14" r="5" stroke="#00c2ff" stroke-width="1.5"/>
+    </svg>
+    <div class="hdr-title">Acute Medicine <span>SCE</span></div>
+  </div>
+  <div class="hdr-right">
+    <div class="pill" id="hScore" style="display:none">Session <b id="hScoreVal">0%</b></div>
+    <div class="pill">Done <b id="hDone">0</b></div>
+  </div>
+</header>
+
+<!-- HOME -->
+<div class="scr on" id="scrHome">
+<div class="home">
+  <div class="home-hero">
+    <div class="hero-label">MRCP(UK) · SCE Exam Preparation</div>
+    <div class="hero-title">Acute Medicine<br>Question Bank</div>
+    <div class="hero-sub">ICU O.Dakka · Sept 2026 Target</div>
+    <div class="stat-row">
+      <div class="stat"><div class="stat-n">550</div><div class="stat-l">Questions</div></div>
+      <div class="stat"><div class="stat-n" id="sDone">0</div><div class="stat-l">Answered</div></div>
+      <div class="stat"><div class="stat-n" id="sCorr">0</div><div class="stat-l">Correct</div></div>
+      <div class="stat"><div class="stat-n" id="sPct">—</div><div class="stat-l">Score</div></div>
+    </div>
+  </div>
+
+  <div class="sec-head">Select Category</div>
+  <div class="cat-scroll" id="catList"></div>
+  <button class="go-btn" onclick="startQuiz()">▶ Start Quiz</button>
+</div>
+</div>
+
+<!-- QUIZ -->
+<div class="scr" id="scrQuiz">
+<div class="quiz">
+  <div class="q-nav">
+    <div class="q-counter">Q <b id="qN">1</b> / <b id="qT">0</b></div>
+    <button class="end-btn" onclick="endQuiz()">✕ End</button>
+  </div>
+  <div class="prog-track"><div class="prog-fill" id="pFill" style="width:0%"></div></div>
+
+  <div class="q-card">
+    <div class="q-card-head">
+      <span class="tag tag-id" id="qId">Q#—</span>
+      <span class="tag tag-cat" id="qCat">—</span>
+      <span class="tag tag-mcq" id="qMcq" style="display:none">MCQ</span>
+    </div>
+    <div class="q-body">
+      <div class="stem" id="qStem"></div>
+    </div>
+  </div>
+
+  <div class="opts" id="optsWrap"></div>
+  <div class="ans-reveal" id="ansReveal">
+    <div class="ans-lbl">✓ Correct Answer</div>
+    <div class="ans-txt" id="ansTxt"></div>
+  </div>
+  <div class="self" id="selfAssess">
+    <button class="sa sa-y" onclick="markSelf(true)">✓ Got it right</button>
+    <button class="sa sa-n" onclick="markSelf(false)">✗ Got it wrong</button>
+  </div>
+  <div class="acts" id="actRow"></div>
+
+  <div class="focus" id="focusBox">
+    <div class="focus-lbl">Focus</div>
+    <div class="focus-txt" id="focusTxt"></div>
+  </div>
+</div>
+</div>
+
+<!-- RESULTS -->
+<div class="scr" id="scrResults">
+<div class="results">
+  <div class="res-icon">🎯</div>
+  <div class="res-pct" id="rPct">—%</div>
+  <div class="res-sub" id="rSub"></div>
+  <div class="res-grid">
+    <div class="res-box"><div class="res-n" style="color:var(--green)" id="rC">0</div><div class="res-l">Correct</div></div>
+    <div class="res-box"><div class="res-n" style="color:var(--red)" id="rW">0</div><div class="res-l">Wrong</div></div>
+    <div class="res-box"><div class="res-n" style="color:var(--accent)" id="rT">0</div><div class="res-l">Answered</div></div>
+  </div>
+  <div class="res-btns">
+    <button class="res-btn res-p" onclick="go('scrHome')">Home</button>
+    <button class="res-btn res-s" onclick="startQuiz()">Retry</button>
+  </div>
+</div>
+</div>
+
+<script src="sce_data.js"></script>
+<script>
+const STORE = 'aceSCE_v1';
+let prog = (() => { try { return JSON.parse(localStorage.getItem(STORE)||'{}'); } catch { return {}; } })();
+let selCat = 'all';
+let quiz = { qs:[], idx:0, correct:0, wrong:0, revealed:false };
+
+function saveProg() { localStorage.setItem(STORE, JSON.stringify(prog)); }
+
+// ── HOME ──────────────────────────────────────────────────────
+function init() { buildCats(); updateStats(); }
+
+function buildCats() {
+  const cats = {};
+  QUESTIONS.forEach(q => { const c = q.category||'Uncategorised'; cats[c] = (cats[c]||0)+1; });
+  const list = document.getElementById('catList');
+  list.innerHTML = '';
+  const mk = (cat, label, count) => {
+    const done = QUESTIONS.filter(q => (cat==='all' || (q.category||'Uncategorised')===cat) && prog[q.id]).length;
+    const tot = cat==='all' ? QUESTIONS.length : count;
+    const pct = tot > 0 ? Math.round(done/tot*100) : 0;
+    const d = document.createElement('div');
+    d.className = 'cat-row' + (cat===selCat?' sel':'');
+    d.innerHTML = `
+      <div>
+        <div class="cat-name">${label}</div>
+        <div class="cat-sub">${cat==='all' ? Object.keys(cats).length+' categories' : count+' questions'}</div>
+      </div>
+      <div class="cat-right">
+        <div class="cat-n">${count} Qs</div>
+        <div class="mini-bar"><div class="mini-fill" style="width:${pct}%"></div></div>
+        <div style="font-size:.6rem;color:var(--muted)">${done} done</div>
+      </div>`;
+    d.onclick = () => { selCat=cat; document.querySelectorAll('.cat-row').forEach(r=>r.classList.remove('sel')); d.classList.add('sel'); };
+    return d;
+  };
+  list.appendChild(mk('all','All Categories', QUESTIONS.length));
+  Object.entries(cats).sort((a,b)=>b[1]-a[1]).forEach(([c,n]) => list.appendChild(mk(c,c,n)));
+}
+
+function updateStats() {
+  const done = Object.keys(prog).length;
+  const correct = Object.values(prog).filter(v=>v==='correct').length;
+  document.getElementById('sDone').textContent = done;
+  document.getElementById('sCorr').textContent = correct;
+  document.getElementById('sPct').textContent = done>0 ? Math.round(correct/done*100)+'%' : '—';
+  document.getElementById('hDone').textContent = done;
+}
+
+// ── QUIZ ──────────────────────────────────────────────────────
+function startQuiz() {
+  let pool = selCat==='all' ? [...QUESTIONS] : QUESTIONS.filter(q=>(q.category||'Uncategorised')===selCat);
+  for (let i=pool.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; }
+  quiz = { qs:pool, idx:0, correct:0, wrong:0, revealed:false };
+  go('scrQuiz'); render();
+}
+
+function render() {
+  if (quiz.idx >= quiz.qs.length) { showResults(); return; }
+  const q = quiz.qs[quiz.idx];
+  quiz.revealed = false;
+
+  document.getElementById('pFill').style.width = Math.round(quiz.idx/quiz.qs.length*100)+'%';
+  document.getElementById('qN').textContent = quiz.idx+1;
+  document.getElementById('qT').textContent = quiz.qs.length;
+  document.getElementById('qId').textContent = 'Q#'+q.id;
+  document.getElementById('qCat').textContent = q.category||'Uncategorised';
+  document.getElementById('qStem').innerHTML = fmtStem(q.stem);
+  document.getElementById('focusTxt').textContent = q.explanation||'No explanation available.';
+  document.getElementById('focusBox').className = 'focus';
+  document.getElementById('ansReveal').className = 'ans-reveal';
+  document.getElementById('selfAssess').className = 'self';
+  document.getElementById('ansTxt').textContent = q.correct||'See explanation below';
+
+  const optsWrap = document.getElementById('optsWrap');
+  optsWrap.innerHTML = '';
+  const mcqTag = document.getElementById('qMcq');
+
+  const isMCQ = q.hasMCQ && q.options && q.options.length >= 2;
+  mcqTag.style.display = isMCQ ? '' : 'none';
+
+  if (isMCQ) {
+    q.options.forEach((opt, i) => {
+      const b = document.createElement('button');
+      b.className = 'opt';
+      b.innerHTML = `<span class="opt-l">${String.fromCharCode(65+i)}</span><span>${esc(opt)}</span>`;
+      b.onclick = () => pickOpt(b, opt, q);
+      optsWrap.appendChild(b);
+    });
+    mkActs(['expl']);
+  } else {
+    mkActs(['reveal','expl']);
+  }
+
+  const tot = quiz.correct+quiz.wrong;
+  if (tot > 0) {
+    document.getElementById('hScore').style.display = '';
+    document.getElementById('hScoreVal').textContent = Math.round(quiz.correct/tot*100)+'%';
+  }
+}
+
+function fmtStem(s) {
+  if (!s) return '';
+  s = s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return s.split(/\n\n+/).map(p => '<p>'+p.replace(/\n/g,'<br>')+'</p>').join('');
+}
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function norm(s) { return String(s||'').toLowerCase().trim().replace(/\s+/g,' '); }
+
+function pickOpt(btn, opt, q) {
+  if (quiz.revealed) return;
+  quiz.revealed = true;
+  const isCorrect = q.correct && (norm(opt)===norm(q.correct) || norm(q.correct).startsWith(norm(opt).slice(0,25)) || norm(opt).startsWith(norm(q.correct).slice(0,25)));
+  document.querySelectorAll('.opt').forEach(b => {
+    b.disabled = true;
+    const bOpt = b.querySelector('span:last-child').textContent;
+    if (q.correct && (norm(bOpt)===norm(q.correct) || norm(q.correct).startsWith(norm(bOpt).slice(0,25)))) {
+      b.className = 'opt reveal-ok';
+      b.querySelector('.opt-l').style.cssText = 'background:var(--green);color:#09111f';
+    }
+  });
+  btn.className = isCorrect ? 'opt correct' : 'opt wrong';
+  if (isCorrect) { quiz.correct++; prog[q.id]='correct'; }
+  else { quiz.wrong++; prog[q.id]='wrong'; }
+  saveProg(); updateStats();
+  if (!isCorrect && q.correct) document.getElementById('ansReveal').className = 'ans-reveal on';
+  document.getElementById('focusBox').className = 'focus on';
+  mkActs(['next']);
+}
+
+function revealAnswer() {
+  quiz.revealed = true;
+  document.getElementById('ansReveal').className = 'ans-reveal on';
+  document.getElementById('focusBox').className = 'focus on';
+  document.getElementById('selfAssess').className = 'self on';
+  mkActs(['next']);
+}
+
+function markSelf(correct) {
+  const q = quiz.qs[quiz.idx];
+  if (correct) { quiz.correct++; prog[q.id]='correct'; }
+  else { quiz.wrong++; prog[q.id]='wrong'; }
+  saveProg(); updateStats();
+  document.getElementById('selfAssess').className = 'self';
+  mkActs(['next']);
+  const tot = quiz.correct+quiz.wrong;
+  document.getElementById('hScore').style.display = '';
+  document.getElementById('hScoreVal').textContent = Math.round(quiz.correct/tot*100)+'%';
+}
+
+function mkActs(types) {
+  const row = document.getElementById('actRow');
+  row.innerHTML = '';
+  if (types.includes('reveal')) {
+    const b = document.createElement('button'); b.className='act act-reveal'; b.textContent='👁 Reveal Answer'; b.onclick=revealAnswer; row.appendChild(b);
+  }
+  if (types.includes('expl')) {
+    const b = document.createElement('button'); b.className='act act-expl'; b.textContent='📖 Focus';
+    b.onclick = () => { const f=document.getElementById('focusBox'); f.className=f.classList.contains('on')?'focus':'focus on'; };
+    row.appendChild(b);
+  }
+  if (types.includes('next')) {
+    const b = document.createElement('button'); b.className='act act-next';
+    b.textContent = quiz.idx < quiz.qs.length-1 ? 'Next →' : 'Finish ✓';
+    b.onclick = () => { quiz.idx++; render(); };
+    row.appendChild(b);
+  }
+}
+
+function endQuiz() { if (confirm('End this session?')) showResults(); }
+
+function showResults() {
+  const tot = quiz.correct+quiz.wrong;
+  document.getElementById('rPct').textContent = tot>0 ? Math.round(quiz.correct/tot*100)+'%' : '--';
+  document.getElementById('rSub').textContent = `${quiz.correct} correct out of ${tot} answered`;
+  document.getElementById('rC').textContent = quiz.correct;
+  document.getElementById('rW').textContent = quiz.wrong;
+  document.getElementById('rT').textContent = tot;
+  go('scrResults'); buildCats(); updateStats();
+}
+
+function go(id) {
+  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  window.scrollTo(0,0);
+}
+
+init();
+</script>
+</body>
+</html>
